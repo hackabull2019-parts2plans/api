@@ -1,0 +1,25 @@
+syntax = "proto3";
+package parts2plans;
+
+message Part {
+	optional int32 id = 1;
+	string name = 2;
+	string desc = 3;
+	int32 qty = 4;
+}
+
+message PartList {
+	repeated Part parts = 1;
+}
+
+message Project {
+	optional int32 id = 1;
+	string name = 2;
+	string desc = 3;
+	optional string imagePath = 4;
+	PartList partsList = 5;
+}
+
+message ProjectList {
+	repeated Project projects = 1;
+}
