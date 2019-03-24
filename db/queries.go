@@ -6,6 +6,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"../models"
 	"os"
+	"errors"
 )
 
 var db *sql.DB
@@ -63,3 +64,22 @@ func GetAllParts() []*models.Part {
 	return items
 }
 
+func InsertPart(p models.Part) error {
+	if p.Name == "" {
+		fmt.Println("[WARN] Attempted to insert part with empty name")
+		return errors.New("Tried to insert part with no name")
+	}
+
+	if p.Desc == "" {
+		fmt.Println("[WARN] Attempted to insert part with no description")
+		return errors.New("Tried to insert a part with no description")
+	}
+
+	_, err := db.Query("INSERT INTO Part (partName, partDesc) VALUES (?, ?);", p.Name, p.Desc);
+	if err != nil {
+		fmt.Println("[WARN] Failed to insert part into database")
+		return errors.New("Failed to insert part into database")
+	}
+	fmt.Println("[LOG] Inserted part into database with data: name: " + p.Name + ", desc: " + p.Desc)
+	return nil
+}

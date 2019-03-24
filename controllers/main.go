@@ -4,6 +4,9 @@ import (
 	"net/http"
 	"encoding/json"
 	db "../db"
+	"fmt"
+	"io/ioutil"
+	"../models"
 )
 
 type Route struct{
@@ -23,10 +26,41 @@ var Routes = []*Route{
 		Method: "GET",
 		Handler: getAllParts,
 	},
+	&Route{
+		Path: "/part",
+		Method: "POST",
+		Handler: insertPart,
+	},
 }
 
 func getAllParts(w http.ResponseWriter, r *http.Request) {
 	parts := db.GetAllParts()
 
 	json.NewEncoder(w).Encode(parts)
+}
+
+func insertPart(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Println("[LOG] Failed to read body of message")
+		w.WriteHeader(400)
+		return
+	}
+
+	var p models.Part
+
+	err = json.Unmarshal(body, &p)
+	if err != nil {
+		// Invalid json
+		fmt.Println("[LOG] Invalid json")
+		w.WriteHeader(400)
+		return
+	}
+
+	err = db.InsertPart(p)
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+	w.WriteHeader(200)
 }
