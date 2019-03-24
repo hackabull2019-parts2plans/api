@@ -104,5 +104,30 @@ func GetAllProjects() []*models.Project {
 		projects = append(projects, &p)
 	}
 
+	for _, project := range projects {
+		project.Parts,_ = GetParts(project.Id)
+	}
+
 	return projects
+}
+
+func GetParts(projectId int) ([]*models.Part, error) {
+	var parts = []*models.Part{}
+	rows, err := db.Query("SELECT Part.partID, Part.partName, CompMapping.qty FROM Part LEFT JOIN CompMapping ON Part.partID = CompMapping.partID WHERE projectID = ?", projectId)
+	if err != nil {
+		fmt.Println("[ERROR] GetParts query failed to execute")
+		panic(err.Error())
+	}
+
+	for rows.Next() {
+		var p models.Part
+
+		err = rows.Scan(&p.Id, &p.Name, &p.Qty)
+		if err != nil {
+			fmt.Println("[ERROR] Failed to scan row into Part")
+			panic(err.Error())
+		}
+		parts = append(parts, &p)
+	}
+	return parts, nil
 }
