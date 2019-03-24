@@ -2,7 +2,7 @@ package models
 
 type Part struct {
 	Id		int		`json:"id,omitempty"`
-	Name		string		`json:"name"`
+	Name		string		`json:"name,omitempty"`
 	Desc		string		`json:"desc,omitempty"`
 	Qty		int		`json:"qty,omitempty"`
 }

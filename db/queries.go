@@ -84,6 +84,36 @@ func InsertPart(p models.Part) error {
 	return nil
 }
 
+func InsertProject(p models.Project) (int64, error) {
+	if p.Name == "" {
+		fmt.Println("[WARN] Attempted to insert project with empty name")
+		return 0, errors.New("Tried to insert project with no name")
+	}
+
+	if p.Desc == "" {
+		fmt.Println("[WARN] Attempted to insert project with no description")
+		return 0, errors.New("Tried to insert a project with no description")
+	}
+
+	res, err := db.Exec("INSERT INTO Project (projectName, projectDesc, imgPath, url) VALUES (?, ?, ?, ?)", p.Name, p.Desc, p.ImagePath, p.Url);
+	if err != nil {
+		fmt.Println("[WARN] Failed to insert project into database")
+		return 0, errors.New("Failed to insert project into database")
+	}
+	fmt.Println("[LOG] Inserted Project into database with data: name: " + p.Name + ", desc: " + p.Desc)
+	id, _ := res.LastInsertId()
+	return id, nil
+}
+
+func getLastID() int {
+	var id int
+	err := db.QueryRow("SELECT LAST_INSERT_ID();").Scan(&id)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	return id
+}
+
 func GetAllProjects() []*models.Project {
 	var projects = []*models.Project{}
 
@@ -130,4 +160,26 @@ func GetParts(projectId int) ([]*models.Part, error) {
 		parts = append(parts, &p)
 	}
 	return parts, nil
+}
+
+func AddPart(project models.Project, part *models.Part) error {
+	if project.Id == 0 {
+		return errors.New("Invalid project id: 0")
+	}
+
+	if part.Id == 0 {
+		return errors.New("Invalid part id: 0")
+	}
+
+	if part.Qty == 0 {
+		return errors.New("Invalid quantity of parts")
+	}
+
+	_, err := db.Query("INSERT INTO CompMapping (projectID, partID, qty) VALUES (?, ?, ?);", project.Id, part.Id, part.Qty);
+	if err != nil {
+		fmt.Println("[WARN] Failed to insert part to project mapping into database")
+		return errors.New("Failed to insert part to project mapping into database")
+	}
+
+	return nil
 }
