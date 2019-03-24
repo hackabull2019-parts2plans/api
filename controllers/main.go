@@ -27,6 +27,11 @@ var Routes = []*Route{
 		Handler: getAllParts,
 	},
 	&Route{
+		Path: "/projects",
+		Method: "GET",
+		Handler: getAllProjects,
+	},
+	&Route{
 		Path: "/part",
 		Method: "POST",
 		Handler: insertPart,
@@ -37,6 +42,12 @@ func getAllParts(w http.ResponseWriter, r *http.Request) {
 	parts := db.GetAllParts()
 
 	json.NewEncoder(w).Encode(parts)
+}
+
+func getAllProjects(w http.ResponseWriter, r *http.Request) {
+	projects := db.GetAllProjects()
+
+	json.NewEncoder(w).Encode(projects)
 }
 
 func insertPart(w http.ResponseWriter, r *http.Request) {

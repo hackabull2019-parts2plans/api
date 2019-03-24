@@ -83,3 +83,26 @@ func InsertPart(p models.Part) error {
 	fmt.Println("[LOG] Inserted part into database with data: name: " + p.Name + ", desc: " + p.Desc)
 	return nil
 }
+
+func GetAllProjects() []*models.Project {
+	var projects = []*models.Project{}
+
+	rows, err := db.Query("SELECT projectID, projectName, projectDesc, imgPath, url FROM Project;")
+	if err != nil {
+		fmt.Println("[ERROR] GetAllProjects query failed to execute")
+		panic(err.Error())
+	}
+
+	for rows.Next() {
+		var p = models.Project{}
+
+		err = rows.Scan(&p.Id, &p.Name, &p.Desc, &p.ImagePath, &p.Url)
+		if err != nil {
+			fmt.Println("[ERROR] Failed to scan row into Project")
+			panic(err.Error())
+		}
+		projects = append(projects, &p)
+	}
+
+	return projects
+}

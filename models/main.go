@@ -12,5 +12,6 @@ type Project struct {
 	Name		string		`json:"name"`
 	Desc		string		`json:"desc"`
 	ImagePath	string		`json:"imgPath"`
+	Url		string		`json:"url"`
 	Parts		[]Part		`json:"parts"`
 }
