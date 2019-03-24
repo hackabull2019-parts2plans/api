@@ -2,7 +2,7 @@ syntax = "proto3";
 package parts2plans;
 
 message Part {
-	optional int32 id = 1;
+	int32 id = 1;
 	string name = 2;
 	string desc = 3;
 	int32 qty = 4;
@@ -13,10 +13,10 @@ message PartList {
 }
 
 message Project {
-	optional int32 id = 1;
+	int32 id = 1;
 	string name = 2;
 	string desc = 3;
-	optional string imagePath = 4;
+	string imagePath = 4;
 	PartList partsList = 5;
 }
 
